@@ -99,7 +99,7 @@ function ActivityCard({ item }: { item: DiveSite | Activity }) {
                         {isDiveSite ? '🤿' : ('category' in item ? getCategoryIcon(item.category) : '🌊')}
                     </span>
                 </div>
-                {'difficulty' in item && (
+                {'difficulty' in item && item.difficulty && (
                     <span className={`${styles.badge} ${styles[item.difficulty.toLowerCase()]}`}>
                         {item.difficulty}
                     </span>

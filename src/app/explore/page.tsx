@@ -1,35 +1,79 @@
 'use client';
 
-import { useState } from 'react';
-import { diveSites, activities, categories, DiveSite, Activity } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/utils/supabase/client';
 import styles from './explore.module.css';
 
+// Define types based on our database schema
+interface Activity {
+    id: string;
+    name: string;
+    description: string;
+    image_url: string;
+    category: string;
+    price: number;
+    duration: string;
+    difficulty?: string;
+    depth?: string;
+    rating: number;
+    review_count: number;
+    marine_life?: string[];
+}
+
 type CategoryFilter = 'all' | 'diving' | 'snorkeling' | 'boat-tour' | 'water-sports';
+
+const categories = [
+    { id: 'all', name: 'All Activities', icon: '✨' },
+    { id: 'diving', name: 'Diving', icon: '🤿' },
+    { id: 'snorkeling', name: 'Snorkeling', icon: '🏊' },
+    { id: 'boat-tour', name: 'Boat Tours', icon: '🚤' },
+    { id: 'water-sports', name: 'Water Sports', icon: '🏄' },
+];
 
 export default function ExplorePage() {
     const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [activities, setActivities] = useState<Activity[]>([]);
+    const [loading, setLoading] = useState(true);
+    const supabase = createClient();
 
-    const allItems = [...diveSites, ...activities];
+    useEffect(() => {
+        async function fetchActivities() {
+            setLoading(true);
+            let query = supabase.from('activities').select('*');
 
-    const filteredItems = allItems.filter(item => {
-        // Category filter
-        if (activeCategory !== 'all') {
-            const category = 'category' in item
-                ? item.category.toLowerCase().replace(' ', '-')
-                : 'diving';
-            if (category !== activeCategory) return false;
+            if (activeCategory !== 'all') {
+                // Map category IDs to database values
+                const categoryMap: Record<string, string> = {
+                    'diving': 'Diving',
+                    'snorkeling': 'Snorkeling',
+                    'boat-tour': 'Boat Tour',
+                    'water-sports': 'Water Sports'
+                };
+                query = query.eq('category', categoryMap[activeCategory]);
+            }
+
+            if (searchQuery) {
+                query = query.ilike('name', `%${searchQuery}%`);
+            }
+
+            const { data, error } = await query;
+
+            if (error) {
+                console.error('Error fetching activities:', error);
+            } else {
+                setActivities(data || []);
+            }
+            setLoading(false);
         }
 
-        // Search filter
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            return item.name.toLowerCase().includes(query) ||
-                item.description.toLowerCase().includes(query);
-        }
+        // Debounce search
+        const timer = setTimeout(() => {
+            fetchActivities();
+        }, 300);
 
-        return true;
-    });
+        return () => clearTimeout(timer);
+    }, [activeCategory, searchQuery]);
 
     return (
         <div className={styles.explorePage}>
@@ -74,21 +118,25 @@ export default function ExplorePage() {
             {/* Results */}
             <main className={`container ${styles.results}`}>
                 <p className={styles.resultCount}>
-                    {filteredItems.length} {filteredItems.length === 1 ? 'result' : 'results'} found
+                    {loading ? 'Loading...' : `${activities.length} ${activities.length === 1 ? 'result' : 'results'} found`}
                 </p>
 
-                <div className={styles.grid}>
-                    {filteredItems.map((item) => (
-                        <ActivityCard key={item.id} item={item} />
-                    ))}
-                </div>
+                {loading ? (
+                    <div className={styles.loading}>Loading activities...</div>
+                ) : (
+                    <div className={styles.grid}>
+                        {activities.map((item) => (
+                            <ActivityCard key={item.id} item={item} />
+                        ))}
+                    </div>
+                )}
             </main>
         </div>
     );
 }
 
-function ActivityCard({ item }: { item: DiveSite | Activity }) {
-    const isDiveSite = 'depth' in item;
+function ActivityCard({ item }: { item: Activity }) {
+    const isDiveSite = item.category === 'Diving' && item.depth;
 
     return (
         <article className={styles.card}>
@@ -96,10 +144,10 @@ function ActivityCard({ item }: { item: DiveSite | Activity }) {
                 {/* Placeholder gradient for now */}
                 <div className={styles.imagePlaceholder}>
                     <span className={styles.placeholderIcon}>
-                        {isDiveSite ? '🤿' : ('category' in item ? getCategoryIcon(item.category) : '🌊')}
+                        {getCategoryIcon(item.category)}
                     </span>
                 </div>
-                {'difficulty' in item && item.difficulty && (
+                {item.difficulty && (
                     <span className={`${styles.badge} ${styles[item.difficulty.toLowerCase()]}`}>
                         {item.difficulty}
                     </span>
@@ -112,31 +160,24 @@ function ActivityCard({ item }: { item: DiveSite | Activity }) {
                     <div className={styles.rating}>
                         <span className={styles.star}>⭐</span>
                         <span>{item.rating}</span>
-                        <span className={styles.reviewCount}>({item.reviewCount})</span>
+                        <span className={styles.reviewCount}>({item.review_count})</span>
                     </div>
                 </div>
 
                 <p className={styles.description}>{item.description}</p>
 
                 <div className={styles.meta}>
-                    {isDiveSite && (
-                        <>
-                            <span className={styles.metaItem}>🌊 {item.depth}</span>
-                            <span className={styles.metaItem}>⏱️ {item.duration}</span>
-                        </>
-                    )}
-                    {'category' in item && (
-                        <span className={styles.metaItem}>⏱️ {item.duration}</span>
-                    )}
+                    {item.depth && <span className={styles.metaItem}>🌊 {item.depth}</span>}
+                    <span className={styles.metaItem}>⏱️ {item.duration}</span>
                 </div>
 
-                {isDiveSite && (
+                {item.marine_life && item.marine_life.length > 0 && (
                     <div className={styles.marineLife}>
-                        {item.marineLife.slice(0, 3).map((life) => (
+                        {item.marine_life.slice(0, 3).map((life) => (
                             <span key={life} className={styles.marineTag}>{life}</span>
                         ))}
-                        {item.marineLife.length > 3 && (
-                            <span className={styles.marineTag}>+{item.marineLife.length - 3}</span>
+                        {item.marine_life.length > 3 && (
+                            <span className={styles.marineTag}>+{item.marine_life.length - 3}</span>
                         )}
                     </div>
                 )}

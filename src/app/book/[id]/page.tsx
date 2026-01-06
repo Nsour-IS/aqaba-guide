@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { diveSites, activities } from '@/data/mockData';
+import { createClient } from '@/utils/supabase/client';
 import styles from './book.module.css';
 
 interface BookingData {
@@ -35,11 +35,10 @@ const addOns = [
 export default function BookingPage() {
     const params = useParams();
     const activityId = params.id as string;
+    const supabase = createClient();
 
-    // Find the activity
-    const activity = [...diveSites, ...activities].find(
-        (item) => item.id === activityId
-    );
+    const [activity, setActivity] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
     const [step, setStep] = useState(1);
     const [booking, setBooking] = useState<BookingData>({
@@ -55,6 +54,27 @@ export default function BookingPage() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
+
+    useEffect(() => {
+        async function fetchActivity() {
+            const { data, error } = await supabase
+                .from('activities')
+                .select('*')
+                .eq('id', activityId)
+                .single();
+
+            if (data) {
+                setActivity(data);
+            }
+            setLoading(false);
+        }
+
+        fetchActivity();
+    }, [activityId]);
+
+    if (loading) {
+        return <div className={styles.loading}>Loading activity details...</div>;
+    }
 
     if (!activity) {
         return (

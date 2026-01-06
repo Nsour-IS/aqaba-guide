@@ -23,7 +23,7 @@ export default function GeniePage() {
 
     // Sync voice transcript with input field
     useEffect(() => {
-        if (transcript) {
+        if (transcript && setInput) {
             setInput(transcript);
         }
     }, [transcript, setInput]);
@@ -119,15 +119,15 @@ export default function GeniePage() {
 
                     <input
                         className={styles.input}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
+                        value={input || ''}
+                        onChange={(e) => setInput?.(e.target.value)}
                         placeholder={isListening ? "Listening..." : "Type or speak your question..."}
                     />
 
                     <button
                         type="submit"
                         className={styles.sendButton}
-                        disabled={!input.trim() || isLoading}
+                        disabled={!input?.trim() || isLoading}
                     >
                         ➤
                     </button>

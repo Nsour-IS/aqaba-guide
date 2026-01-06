@@ -1,0 +1,56 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 1rem;
+}
+
+.card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--muted);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+}
+
+.header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Custom overrides for Auth UI */
+.authButton {
+    font-weight: 600 !important;
+    padding: 0.75rem !important;
+}
+
+.authInput {
+    padding: 0.75rem !important;
+}
+
+.authLabel {
+    margin-bottom: 0.5rem !important;
+    font-weight: 500 !important;
+    color: var(--foreground) !important;
+}

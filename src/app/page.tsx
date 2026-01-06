@@ -14,6 +14,7 @@ export default function Home() {
           <div className={styles.navLinks}>
             <Link href="/explore">Explore</Link>
             <Link href="/recommend">AI Planner</Link>
+            <Link href="/login">Sign In</Link>
             <Link href="/explore" className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>
               Book Now
             </Link>

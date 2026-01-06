@@ -41,7 +41,7 @@ export default function Navigation() {
                 </Link>
                 <div className={styles.navLinks}>
                     <Link href="/explore">Explore</Link>
-                    <Link href="/recommend">AI Planner</Link>
+                    <Link href="/genie" className={styles.genieLink}>🧞‍♂️ Genie</Link>
 
                     {user ? (
                         <>

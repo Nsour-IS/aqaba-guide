@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { diveSites, activities } from '@/data/mockData';
+import Navigation from '@/components/Navigation';
 import styles from './recommend.module.css';
 
 interface Answers {
@@ -160,6 +161,7 @@ export default function RecommendPage() {
 
         return (
             <div className={styles.page}>
+                <Navigation />
                 <div className={styles.resultsContainer}>
                     <div className={styles.resultsHeader}>
                         <span className={styles.resultsEmoji}>✨</span>
@@ -220,6 +222,7 @@ export default function RecommendPage() {
 
     return (
         <div className={styles.page}>
+            <Navigation />
             {/* Progress Bar */}
             <div className={styles.progressContainer}>
                 <div className={styles.progressBar} style={{ width: `${progress}%` }} />

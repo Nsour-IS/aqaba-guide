@@ -45,6 +45,28 @@
   opacity: 0.8;
 }
 
+.userGreeting {
+  color: white;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.signOutBtn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.signOutBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+
 /* Hero */
 .hero {
   position: relative;

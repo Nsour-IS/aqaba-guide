@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import Navigation from '@/components/Navigation';
 import styles from './explore.module.css';
 
 // Define types based on our database schema

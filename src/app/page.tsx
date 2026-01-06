@@ -1,26 +1,12 @@
 import Link from "next/link";
+import Navigation from "@/components/Navigation";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
     <div className="flex flex-col" style={{ minHeight: '100vh' }}>
       {/* Navigation */}
-      <nav className={styles.nav}>
-        <div className={`container ${styles.navContainer}`}>
-          <Link href="/" className={styles.logo}>
-            <span className={styles.logoIcon}>🌊</span>
-            <span>Aqaba Guide</span>
-          </Link>
-          <div className={styles.navLinks}>
-            <Link href="/explore">Explore</Link>
-            <Link href="/recommend">AI Planner</Link>
-            <Link href="/login">Sign In</Link>
-            <Link href="/explore" className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>
-              Book Now
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Hero Section */}
       <header className={styles.hero}>

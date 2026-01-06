@@ -69,7 +69,27 @@ export default function BookingPage() {
             setLoading(false);
         }
 
+        async function fetchUserProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                // Get profile data if available
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                setBooking(prev => ({
+                    ...prev,
+                    email: user.email || '',
+                    name: profile?.full_name || '',
+                    phone: profile?.phone || ''
+                }));
+            }
+        }
+
         fetchActivity();
+        fetchUserProfile();
     }, [activityId]);
 
     if (loading) {
@@ -99,10 +119,48 @@ export default function BookingPage() {
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        // 1. Check if user is logged in
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            // Redirect to login with return URL
+            window.location.href = `/login?next=/book/${activityId}`;
+            return;
+        }
+
+        // 2. Insert booking into Supabase
+        const { data, error } = await supabase
+            .from('bookings')
+            .insert({
+                user_id: user.id,
+                activity_id: activityId,
+                booking_date: booking.date,
+                booking_time: booking.time,
+                adults: booking.adults,
+                children: booking.children,
+                total_price: total,
+                status: 'confirmed', // Auto-confirm for now
+                contact_name: booking.name,
+                contact_email: booking.email,
+                contact_phone: booking.phone,
+                special_requests: booking.specialRequests
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Booking error:', error);
+            alert('Failed to create booking. Please try again.');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // 3. Show success
         setIsSubmitting(false);
         setIsComplete(true);
+        // Store the real booking ID if needed for the confirmation view
+        // setConfirmedBooking(data); 
     };
 
     if (isComplete) {

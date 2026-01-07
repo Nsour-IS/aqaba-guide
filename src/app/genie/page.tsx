@@ -10,7 +10,7 @@ import ChatActivityCard from '@/components/chat/ChatActivityCard';
 import ChatWeatherCard from '@/components/chat/ChatWeatherCard';
 
 export default function GeniePage() {
-    const { messages, append, isLoading } = useChat({
+    const { messages, append, isLoading, setMessages } = useChat({
         api: '/api/chat',
     } as any) as any;
 
@@ -63,9 +63,27 @@ export default function GeniePage() {
     const handleSend = async (e?: React.FormEvent) => {
         e?.preventDefault();
         if (!inputValue.trim() || isLoading) return;
+
         const userMessage = inputValue;
         setInputValue('');
-        await append({ role: 'user', content: userMessage });
+
+        // Manually add user message to UI immediately
+        const newUserMessage = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: userMessage,
+        };
+
+        if (setMessages) {
+            setMessages([...messages, newUserMessage]);
+        }
+
+        // Send to AI
+        try {
+            await append(newUserMessage);
+        } catch (err) {
+            console.error("Failed to send message:", err);
+        }
     };
 
     const renderMessageContent = (content: string) => {

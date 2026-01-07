@@ -9,7 +9,7 @@ import styles from './genie.module.css';
 export default function GeniePage() {
     const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append } = useChat({
         api: '/api/chat',
-    }) as any;
+    } as any) as any;
 
     const {
         isListening,

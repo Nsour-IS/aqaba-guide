@@ -7,9 +7,13 @@ import Navigation from '@/components/Navigation';
 import styles from './genie.module.css';
 
 export default function GeniePage() {
-    const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append } = useChat({
+    // We only use messages, append, and isLoading from useChat
+    const { messages, append, isLoading } = useChat({
         api: '/api/chat',
     } as any) as any;
+
+    // Manage input state manually to avoid SDK issues
+    const [inputValue, setInputValue] = useState('');
 
     const {
         isListening,
@@ -23,10 +27,10 @@ export default function GeniePage() {
 
     // Sync voice transcript with input field
     useEffect(() => {
-        if (transcript && setInput) {
-            setInput(transcript);
+        if (transcript) {
+            setInputValue(transcript);
         }
-    }, [transcript, setInput]);
+    }, [transcript]);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -42,10 +46,22 @@ export default function GeniePage() {
         }
     };
 
+    const handleSend = async (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (!inputValue.trim() || isLoading) return;
+
+        const userMessage = inputValue;
+        setInputValue(''); // Clear input immediately
+
+        // Send to AI
+        await append({
+            role: 'user',
+            content: userMessage,
+        });
+    };
+
     const handleSuggestionClick = (text: string) => {
-        if (setInput) {
-            setInput(text);
-        }
+        setInputValue(text);
     };
 
     return (
@@ -105,7 +121,7 @@ export default function GeniePage() {
                 </div>
 
                 {/* Input Area */}
-                <form onSubmit={handleSubmit} className={styles.inputArea}>
+                <form onSubmit={handleSend} className={styles.inputArea}>
                     <button
                         type="button"
                         className={`${styles.voiceButton} ${isListening ? styles.listening : ''}`}
@@ -125,15 +141,15 @@ export default function GeniePage() {
 
                     <input
                         className={styles.input}
-                        value={input || ''}
-                        onChange={handleInputChange}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
                         placeholder={isListening ? "Listening..." : "Type or speak your question..."}
                     />
 
                     <button
                         type="submit"
                         className={styles.sendButton}
-                        disabled={!input?.trim() || isLoading}
+                        disabled={!inputValue.trim() || isLoading}
                     >
                         ➤
                     </button>

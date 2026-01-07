@@ -7,9 +7,9 @@ import Navigation from '@/components/Navigation';
 import styles from './genie.module.css';
 
 export default function GeniePage() {
-    const { messages, input, setInput, handleSubmit, isLoading } = useChat({
+    const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append } = useChat({
         api: '/api/chat',
-    } as any) as any;
+    }) as any;
 
     const {
         isListening,
@@ -42,6 +42,12 @@ export default function GeniePage() {
         }
     };
 
+    const handleSuggestionClick = (text: string) => {
+        if (setInput) {
+            setInput(text);
+        }
+    };
+
     return (
         <div className={styles.page}>
             <Navigation />
@@ -64,13 +70,13 @@ export default function GeniePage() {
                             <h2>How can I help you today?</h2>
                             <p>Ask me about dive sites, weather, or plan a full trip!</p>
                             <div className={styles.suggestions}>
-                                <button onClick={() => setInput("Plan a 3-day diving trip for beginners")}>
+                                <button onClick={() => handleSuggestionClick("Plan a 3-day diving trip for beginners")}>
                                     📅 Plan a 3-day trip
                                 </button>
-                                <button onClick={() => setInput("What's the best wreck dive here?")}>
+                                <button onClick={() => handleSuggestionClick("What's the best wreck dive here?")}>
                                     ⚓ Best wreck dive?
                                 </button>
-                                <button onClick={() => setInput("Is it safe to snorkel today?")}>
+                                <button onClick={() => handleSuggestionClick("Is it safe to snorkel today?")}>
                                     🌊 Snorkeling conditions
                                 </button>
                             </div>
@@ -120,7 +126,7 @@ export default function GeniePage() {
                     <input
                         className={styles.input}
                         value={input || ''}
-                        onChange={(e) => setInput?.(e.target.value)}
+                        onChange={handleInputChange}
                         placeholder={isListening ? "Listening..." : "Type or speak your question..."}
                     />
 

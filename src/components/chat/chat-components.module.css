@@ -1,0 +1,117 @@
+.activityCard {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 300px;
+    backdrop-filter: blur(10px);
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.categoryBadge {
+    background: rgba(0, 206, 209, 0.2);
+    color: #00CED1;
+    padding: 0.25rem 0.6rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.rating {
+    font-size: 0.85rem;
+    color: #fbbf24;
+}
+
+.activityCard h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.price {
+    display: flex;
+    flex-direction: column;
+}
+
+.amount {
+    font-weight: 700;
+    color: white;
+    font-size: 1.1rem;
+}
+
+.label {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+.bookBtn {
+    background: #0077BE;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.bookBtn:hover {
+    background: #005fa3;
+    transform: translateY(-2px);
+}
+
+.weatherCard {
+    background: linear-gradient(135deg, rgba(0, 119, 190, 0.2) 0%, rgba(0, 206, 209, 0.2) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.weatherIcon {
+    font-size: 2.5rem;
+}
+
+.temp {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.condition {
+    margin: 0;
+    opacity: 0.8;
+    font-size: 0.9rem;
+}

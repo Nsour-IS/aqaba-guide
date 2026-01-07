@@ -29,13 +29,13 @@ export async function POST(req: Request) {
     let responseText = "I'm the Aqaba Genie! I can help you plan your trip. Ask me about diving, snorkeling, or the weather.";
 
     if (lastMessage.includes('plan') || lastMessage.includes('trip')) {
-        responseText = "I'd love to help you plan! For a 3-day trip, I recommend:\n\n**Day 1:** Start with a check-dive at *Seven Sisters* to get comfortable.\n**Day 2:** Explore the famous *Cedar Pride Wreck* in the morning.\n**Day 3:** Relax with a sunset cruise and snorkeling at the *Japanese Garden*.\n\nWould you like me to book any of these for you?";
+        responseText = "I'd love to help you plan! For a 3-day trip, I recommend starting with the Cedar Pride Wreck. \n\nCOMPONENT:ACTIVITY:CEDAR_PRIDE \n\nWould you like me to add this to your itinerary?";
     } else if (lastMessage.includes('wreck') || lastMessage.includes('cedar')) {
-        responseText = "The **Cedar Pride** is Aqaba's most famous wreck! It's a Lebanese freighter sunk in 1985 by King Abdullah II. It lies at 25m depth and is covered in beautiful soft corals. It's perfect for intermediate divers. \n\nI can book a guided dive there for 65 JOD. Interested?";
-    } else if (lastMessage.includes('snorkel') || lastMessage.includes('family')) {
-        responseText = "For snorkeling, especially with family, I highly recommend the **Japanese Garden**. It's shallow (2-6m), has calm water, and is teeming with colorful fish and turtles! \n\nAnother great option is a Glass Bottom Boat tour if you prefer to stay dry.";
+        responseText = "The **Cedar Pride** is Aqaba's most famous wreck! It's a Lebanese freighter sunk in 1985. \n\nCOMPONENT:ACTIVITY:CEDAR_PRIDE \n\nI can book a guided dive there for 65 JOD. Interested?";
+    } else if (lastMessage.includes('snorkel') || lastMessage.includes('garden')) {
+        responseText = "For snorkeling, I highly recommend the **Japanese Garden**. It's shallow and teeming with life! \n\nCOMPONENT:ACTIVITY:JAPANESE_GARDEN \n\nWould you like to see more details?";
     } else if (lastMessage.includes('weather') || lastMessage.includes('safe')) {
-        responseText = "The weather in Aqaba is currently sunny with a gentle breeze (10 knots). \n\n🌊 **Sea Conditions:** Calm\n🌡️ **Water Temp:** 24°C\n\nIt's a perfect day for being in the water!";
+        responseText = "The weather in Aqaba is perfect today! \n\nCOMPONENT:WEATHER \n\nIt's a great day for being in the water!";
     }
 
     // Simulate streaming delay for realism

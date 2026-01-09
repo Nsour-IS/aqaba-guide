@@ -27,12 +27,14 @@ export default function GeniePage() {
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // Sync voice transcript with input field
     useEffect(() => {
         if (transcript) {
             setInputValue(transcript);
         }
     }, [transcript]);
 
+    // Auto-scroll to bottom
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
@@ -67,26 +69,24 @@ export default function GeniePage() {
         const userMessage = inputValue;
         setInputValue('');
 
-        // Manually add user message to UI immediately
-        const newUserMessage = {
-            id: Date.now().toString(),
-            role: 'user',
-            content: userMessage,
-        };
-
-        if (setMessages) {
-            setMessages([...messages, newUserMessage]);
-        }
-
         // Send to AI
         try {
-            await append(newUserMessage);
+            await append({
+                role: 'user',
+                content: userMessage,
+            });
         } catch (err) {
             console.error("Failed to send message:", err);
         }
     };
 
+    const handleSuggestionClick = (text: string) => {
+        setInputValue(text);
+    };
+
     const renderMessageContent = (content: string) => {
+        if (!content) return null;
+
         // Check for special component triggers in the text
         if (content.includes('COMPONENT:ACTIVITY:CEDAR_PRIDE')) {
             return (
@@ -170,13 +170,13 @@ export default function GeniePage() {
                                 <h2>How can I help you today?</h2>
                                 <p>Ask me about dive sites, weather, or plan a full trip!</p>
                                 <div className={styles.suggestions}>
-                                    <button onClick={() => setInputValue("Plan a 3-day diving trip for beginners")}>
+                                    <button onClick={() => handleSuggestionClick("Plan a 3-day diving trip for beginners")}>
                                         📅 Plan a 3-day trip
                                     </button>
-                                    <button onClick={() => setInputValue("What's the best wreck dive here?")}>
+                                    <button onClick={() => handleSuggestionClick("What's the best wreck dive here?")}>
                                         ⚓ Best wreck dive?
                                     </button>
-                                    <button onClick={() => setInputValue("Is it safe to snorkel today?")}>
+                                    <button onClick={() => handleSuggestionClick("Is it safe to snorkel today?")}>
                                         🌊 Snorkeling conditions
                                     </button>
                                 </div>
@@ -204,11 +204,13 @@ export default function GeniePage() {
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {/* Input Area */}
                     <form onSubmit={handleSend} className={styles.inputArea}>
                         <button
                             type="button"
                             className={`${styles.voiceButton} ${isListening ? styles.listening : ''}`}
                             onClick={handleVoiceClick}
+                            title={isListening ? "Stop listening" : "Start voice input"}
                         >
                             {isListening ? (
                                 <span className={styles.waveform}>
@@ -216,14 +218,18 @@ export default function GeniePage() {
                                     <span className={styles.bar}></span>
                                     <span className={styles.bar}></span>
                                 </span>
-                            ) : '🎤'}
+                            ) : (
+                                '🎤'
+                            )}
                         </button>
+
                         <input
                             className={styles.input}
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             placeholder={isListening ? "Listening..." : "Type or speak your question..."}
                         />
+
                         <button
                             type="submit"
                             className={styles.sendButton}
@@ -237,4 +243,3 @@ export default function GeniePage() {
         </div>
     );
 }
-

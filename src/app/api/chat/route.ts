@@ -1,6 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { streamText } from 'ai';
-import { NextResponse } from 'next/server';
+import { streamText, createTextStreamResponse } from 'ai';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -10,7 +9,7 @@ export async function POST(req: Request) {
         const { messages } = await req.json();
 
         if (!messages || messages.length === 0) {
-            return new NextResponse('No messages provided', { status: 400 });
+            return new Response('No messages provided', { status: 400 });
         }
 
         const lastMessage = messages[messages.length - 1].content.toLowerCase();
@@ -42,16 +41,18 @@ export async function POST(req: Request) {
             responseText = "The weather in Aqaba is perfect today! \n\nCOMPONENT:WEATHER \n\nIt's a great day for being in the water!";
         }
 
-        // Return a simple response if streaming is failing
-        // useChat can handle non-streaming responses too
-        return new NextResponse(responseText, {
-            headers: {
-                'Content-Type': 'text/plain; charset=utf-8',
-            },
+        // Return a proper text stream response for the AI SDK
+        return createTextStreamResponse({
+            textStream: new ReadableStream({
+                start(controller) {
+                    controller.enqueue(responseText);
+                    controller.close();
+                },
+            }),
         });
     } catch (error: any) {
         console.error('Chat API Error:', error);
-        return new NextResponse(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
